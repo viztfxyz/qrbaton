@@ -1,0 +1,5 @@
+#!/bin/sh
+# Stable entry point: qrbaton-link [--json] [--b64] <image | upi://... | ->
+D="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+PY="$D/.venv/bin/python"; [ -x "$PY" ] || PY=python3
+exec "$PY" "$D/qr2link.py" "$@"

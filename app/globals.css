@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-canvas: #f3f2ee;
+  --color-card: #ffffff;
+  --color-ink: #16150f;
+  --color-mute: #6b675e;
+  --color-faint: #a19c92;
+  --color-line: rgb(22 21 15 / 0.08);
+  --color-soft: #f6f5f1;
+  --color-save: #067647;
+  --color-save-soft: #e9f8ef;
+  --color-warn: #b54708;
+  --color-warn-soft: #fff6e6;
+  --color-bad: #c0262d;
+  --color-bad-soft: #fdf0f0;
+
+  --shadow-card: 0 0 0 1px rgb(22 21 15 / 0.04), 0 1px 2px rgb(22 21 15 / 0.04), 0 12px 32px -12px rgb(22 21 15 / 0.10);
+  --shadow-float: 0 -1px 0 rgb(22 21 15 / 0.06), 0 -18px 40px -18px rgb(22 21 15 / 0.22);
+
+  --animate-shine: shine 3.2s ease-in-out infinite;
+  --animate-pulse-dot: pulse-dot 1.8s ease-in-out infinite;
+
+  @keyframes shine {
+    0%, 55% { transform: translateX(-120%) skewX(-18deg); }
+    100% { transform: translateX(220%) skewX(-18deg); }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(6 118 71 / 0.45); }
+    50% { box-shadow: 0 0 0 6px rgb(6 118 71 / 0); }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: #0d0d0b;
+    --color-card: #181815;
+    --color-ink: #f5f4f0;
+    --color-mute: #aaa59b;
+    --color-faint: #6f6b63;
+    --color-line: rgb(245 244 240 / 0.09);
+    --color-soft: #22221e;
+    --color-save: #6ee7a8;
+    --color-save-soft: #0e2a1d;
+    --color-warn: #fdb022;
+    --color-warn-soft: #2a1d07;
+    --color-bad: #ff8f8a;
+    --color-bad-soft: #2e1313;
+    --shadow-card: 0 0 0 1px rgb(245 244 240 / 0.06);
+    --shadow-float: 0 -1px 0 rgb(245 244 240 / 0.08), 0 -18px 40px -18px rgb(0 0 0 / 0.6);
+  }
+}
+
+@layer base {
+  html { background: var(--color-canvas); color-scheme: light dark; -webkit-text-size-adjust: 100%; }
+  body {
+    @apply min-h-dvh font-sans text-ink antialiased;
+    background:
+      radial-gradient(120% 40% at 50% -8%, color-mix(in oklab, var(--color-card) 90%, transparent), transparent 60%),
+      var(--color-canvas);
+    -webkit-tap-highlight-color: transparent;
+  }
+  ::selection { background: rgb(25 103 210 / 0.22); }
+  :focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+}
+
+@utility tabular { font-variant-numeric: tabular-nums lining-nums; }
+@utility card { background: var(--color-card); border-radius: 1.5rem; box-shadow: var(--shadow-card); }
+@utility pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0.75rem); }

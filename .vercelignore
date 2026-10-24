@@ -1,0 +1,5 @@
+.venv/
+test/
+__pycache__/
+qr2link.py
+bin/
