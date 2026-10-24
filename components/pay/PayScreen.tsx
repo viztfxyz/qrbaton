@@ -3,6 +3,7 @@
 import NumberFlow from "@number-flow/react";
 import { ChevronRight, Loader2, LockKeyhole } from "lucide-react";
 import { motion } from "motion/react";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { Order, Status } from "@/lib/order";
@@ -57,6 +58,12 @@ export function PayScreen({ upi, order, session, demo }: Props) {
   const [claimOpen, setClaimOpen] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const sender = order?.agent ?? "the sender";
+  // Feature usage only: nothing about the amount, the cart, the payee or whether the payment went through.
+  const track = (event: string, props: Record<string, unknown> = {}) => posthog.capture(event, { demo: !!demo, has_order: !!order, ...props });
+
+  useEffect(() => {
+    track("pay_page_viewed");
+  }, []);
 
   useEffect(() => {
     const l = getLocal(LAST_KEY) as AppKey | null;
@@ -74,6 +81,7 @@ export function PayScreen({ upi, order, session, demo }: Props) {
     setLocal(LAST_KEY, app);
     setLast(app);
     setOpened(true);
+    track("pay_now_clicked", { app: selected.name });
     if (demo) {
       e.preventDefault();
       toast(`Demo: pretending to open ${selected.name}…`, { description: "In real use, your UPI app opens with everything filled in." });
@@ -106,7 +114,7 @@ export function PayScreen({ upi, order, session, demo }: Props) {
 
   return (
     <>
-      <main className="mx-auto w-full max-w-md px-4 pt-[calc(env(safe-area-inset-top)+20px)] pb-64">
+      <main className="ph-no-capture mx-auto w-full max-w-md px-4 pt-[calc(env(safe-area-inset-top)+20px)] pb-64">
         {/* header */}
         <motion.header {...rise(0)} className="flex items-center gap-3 px-1">
           <MerchantLogo name={merchant} logo={order?.logo} />
@@ -262,6 +270,7 @@ export function PayScreen({ upi, order, session, demo }: Props) {
         selected={app}
         last={last}
         onSelect={(k) => {
+          if (k !== app) track("upi_app_selected", { app: APPS.find((a) => a.k === k)?.name, previous: selected.name });
           setApp(k);
           setTimeout(() => setSheet(false), 160);
         }}

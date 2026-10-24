@@ -2,6 +2,7 @@
 
 import { ArrowRight, Copy, Link2, Loader2, ScanLine } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import posthog from "posthog-js";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/cn";
@@ -68,9 +69,12 @@ export function QrTool() {
     let data: string | null;
     try {
       data = await decodeQr(f);
-    } catch {
+    } catch (e) {
+      posthog.captureException(e);
+      posthog.capture("qr_scanned", { result: "unreadable_image" });
       return setMsg({ kind: "err", text: "Could not open that image." });
     }
+    posthog.capture("qr_scanned", { result: !data ? "no_qr" : /^upi:\/\/pay\?/i.test(data.trim()) && parseUpi(data) ? "upi" : "not_upi" });
     if (!data) return setMsg({ kind: "err", text: "No QR code found in that image. Try a clearer, closer photo." });
     const upi = /^upi:\/\/pay\?/i.test(data.trim()) ? parseUpi(data) : null;
     if (!upi) return setMsg({ kind: "err", text: `Not a UPI payment QR (expected upi://pay?pa=…). Found: ${data.slice(0, 120)}` });
@@ -84,7 +88,11 @@ export function QrTool() {
       if (v) f.set(k, v);
     }
     if (!f.get("pa")) return setOut({ err: "UPI ID is required." });
-    if (!parseUpi(f)) return setOut({ err: "That doesn’t look like a UPI ID (name@bank)." });
+    if (!parseUpi(f)) {
+      posthog.capture("manual_link_invalid");
+      return setOut({ err: "That doesn’t look like a UPI ID (name@bank)." });
+    }
+    posthog.capture("manual_link_created", { has_amount: f.has("am"), has_note: f.has("tn") });
     setOut({ link: `${location.origin}/?${f}` });
   };
 
@@ -163,7 +171,10 @@ export function QrTool() {
                     <div className="mt-3 flex gap-2">
                       <button
                         type="button"
-                        onClick={() => navigator.clipboard?.writeText(out.link!).then(() => toast.success("Link copied"))}
+                        onClick={() => {
+                          posthog.capture("manual_link_copied");
+                          void navigator.clipboard?.writeText(out.link!).then(() => toast.success("Link copied"));
+                        }}
                         className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-card text-[13.5px] font-semibold shadow-card"
                       >
                         <Copy className="size-4" /> Copy

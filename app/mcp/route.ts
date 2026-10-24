@@ -1,3 +1,4 @@
+import { createdProps, distinctFor, track } from "@/lib/analytics";
 import { limitCreate, requireManage } from "@/lib/auth";
 import { SITE } from "@/lib/site";
 import { createInputSchema } from "@/lib/apiSpec";
@@ -61,8 +62,15 @@ async function callTool(req: Request, name: string, args: Record<string, unknown
     switch (name) {
       case "create_pay_link": {
         const limited = await limitCreate(req);
-        if (limited) return text(await errorBody(limited), true);
-        const c = await createFromInput(args, publicOrigin(req));
+        if (limited) {
+          track("pay_link_rate_limited", distinctFor(req), { source: "mcp" });
+          return text(await errorBody(limited), true);
+        }
+        const c = await createFromInput(args, publicOrigin(req)).catch((e) => {
+          if (e instanceof InputError) track("pay_link_create_failed", distinctFor(req), { source: "mcp", error: e.message });
+          throw e;
+        });
+        track("pay_link_created", distinctFor(req), { source: "mcp", ...createdProps(args) });
         return text({ ...c, tell_payer: `Review and pay here: ${c.url}` });
       }
       case "get_payment_status": {

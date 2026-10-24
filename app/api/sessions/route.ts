@@ -1,3 +1,4 @@
+import { createdProps, distinctFor, track } from "@/lib/analytics";
 import { limitCreate } from "@/lib/auth";
 import { createFromInput, InputError, publicOrigin } from "@/lib/create";
 import { guarded, json, preflight, withCors } from "@/lib/http";
@@ -40,7 +41,16 @@ async function readBody(req: Request): Promise<CreateSessionInput> {
 export async function POST(req: Request) {
   return guarded(async () => {
     const limited = await limitCreate(req);
-    if (limited) return withCors(limited);
-    return json(await createFromInput(await readBody(req), publicOrigin(req)), 201);
+    if (limited) {
+      track("pay_link_rate_limited", distinctFor(req), { source: "api" });
+      return withCors(limited);
+    }
+    const input = await readBody(req);
+    const c = await createFromInput(input, publicOrigin(req)).catch((e) => {
+      if (e instanceof InputError) track("pay_link_create_failed", distinctFor(req), { source: "api", error: e.message });
+      throw e;
+    });
+    track("pay_link_created", distinctFor(req), { source: "api", ...createdProps(input) });
+    return json(c, 201);
   });
 }

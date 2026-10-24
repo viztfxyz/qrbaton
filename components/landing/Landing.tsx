@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/cn";
@@ -297,7 +298,10 @@ After I pay, check the status and finish the order.`,
               type="button"
               role="tab"
               aria-selected={n === i}
-              onClick={() => setI(n)}
+              onClick={() => {
+                setI(n);
+                posthog.capture("agent_setup_tab_selected", { method: x.k });
+              }}
               className="relative shrink-0 rounded-2xl p-3.5 text-left md:shrink"
             >
               {n === i && <motion.span layoutId="agent-tab" className="absolute inset-0 rounded-2xl bg-soft" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
@@ -318,7 +322,10 @@ After I pay, check the status and finish the order.`,
             <span className="ml-2 font-mono text-[12px] text-white/50">{t.file}</span>
             <button
               type="button"
-              onClick={() => navigator.clipboard?.writeText(t.code).then(() => toast.success("Copied"))}
+              onClick={() => {
+                posthog.capture("agent_setup_copied", { method: t.k });
+                void navigator.clipboard?.writeText(t.code).then(() => toast.success("Copied"));
+              }}
               className="ml-auto flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12.5px] font-semibold text-white/60 hover:bg-white/10 hover:text-white"
             >
               <Copy className="size-3.5" /> Copy
