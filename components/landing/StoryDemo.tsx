@@ -23,18 +23,17 @@ const STEP_MS = 2600;
 /** Six-beat loop: agent on a laptop hits a UPI QR → link to phone → one tap → paid. */
 export function StoryDemo() {
   const [step, setStep] = useState(0);
-  const [paused, setPaused] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const visible = useInView(root, { amount: 0.3 });
 
   useEffect(() => {
-    if (paused || !visible) return;
+    if (!visible) return;
     const h = setTimeout(() => setStep((s) => (s + 1) % STEPS.length), step === STEPS.length - 1 ? STEP_MS + 1200 : STEP_MS);
     return () => clearTimeout(h);
-  }, [step, paused, visible]);
+  }, [step, visible]);
 
   return (
-    <div ref={root} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} className="relative">
+    <div ref={root} className="relative">
       <div className="relative flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-center lg:gap-0">
         <Laptop step={step} />
         <Courier step={step} />
@@ -47,11 +46,11 @@ export function StoryDemo() {
             <button type="button" onClick={() => setStep(i)} className="group block w-full py-2 text-left" aria-current={i === step}>
               <span className="block h-1 overflow-hidden rounded-full bg-line">
                 <motion.span
-                  key={`${i}-${step}-${paused}`}
+                  key={`${i}-${step}`}
                   className="block h-full rounded-full bg-ink"
                   initial={{ width: i < step ? "100%" : "0%" }}
-                  animate={{ width: i < step ? "100%" : i === step ? (paused ? "50%" : "100%") : "0%" }}
-                  transition={{ duration: i === step && !paused ? STEP_MS / 1000 : 0.2, ease: "linear" }}
+                  animate={{ width: i < step ? "100%" : i === step ? "100%" : "0%" }}
+                  transition={{ duration: i === step ? STEP_MS / 1000 : 0.2, ease: "linear" }}
                 />
               </span>
               <span className={cn("mt-2 hidden text-[12px] leading-tight font-semibold transition-colors sm:block", i === step ? "text-ink" : "text-faint group-hover:text-mute")}>

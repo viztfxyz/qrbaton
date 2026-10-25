@@ -57,7 +57,7 @@
 @layer base {
   html { background: var(--color-canvas); color-scheme: light dark; -webkit-text-size-adjust: 100%; }
   body {
-    @apply min-h-dvh font-sans text-ink antialiased;
+    @apply min-h-svh font-sans text-ink antialiased;
     background:
       radial-gradient(120% 40% at 50% -8%, color-mix(in oklab, var(--color-card) 90%, transparent), transparent 60%),
       var(--color-canvas);
