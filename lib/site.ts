@@ -1,7 +1,9 @@
 /** Name and copy shared by metadata, the landing page, OG images and docs. Rename the project here. */
 export const SITE = {
   name: "qrbaton",
-  title: "Your agent shops. You pay with one tap.",
+  repo: "https://github.com/viztfxyz/qrbaton",
+  author: { name: "viztf", url: "https://viztf.lol" },
+  title: "Any UPI QR, one tap away.",
   description:
     "Turn the UPI QR your AI agent hits at checkout into a one-tap pay page on your phone. Opens GPay, PhonePe or Paytm pre-filled. MCP server + HTTP API, no keys.",
   keywords: [

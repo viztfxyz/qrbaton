@@ -46,81 +46,100 @@ function useOrigin() {
 export function Landing() {
   const origin = useOrigin();
   return (
-    <div className="relative isolate overflow-x-clip">
-      <Backdrop />
+    <>
       <Nav />
-      <header className="mx-auto max-w-6xl px-5 pt-10 pb-12 text-center sm:pt-14">
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease }}
-          className="mx-auto inline-flex items-center gap-2 rounded-full bg-card px-3 py-1.5 text-[12.5px] font-semibold text-mute shadow-card"
-        >
-          <Bot className="size-3.5" /> For AI agents that shop for you
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease, delay: 0.05 }}
-          className="mx-auto mt-6 max-w-4xl text-[clamp(2.4rem,5.6vw,4.1rem)] leading-[0.98] font-bold tracking-[-0.045em] text-balance"
-        >
-          Your agent shops on a desktop.
-          <span className="block bg-gradient-to-r from-[#0b9a5c] via-[#1a7f6e] to-[#4285F4] bg-clip-text text-transparent">You pay with one tap.</span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease, delay: 0.12 }}
-          className="mx-auto mt-5 max-w-2xl text-[17px] leading-relaxed text-mute text-pretty"
-        >
-          At checkout your agent hits a UPI QR it can’t pay. {NAME} turns that QR and the cart into a pay page on your phone. Open the link, check the order, tap Pay, and your UPI app opens with everything filled in.
-        </motion.p>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease, delay: 0.2 }}
-          className="mt-7 flex flex-wrap justify-center gap-3"
-        >
-          <a href="/demo" className="group flex h-12 items-center gap-2 rounded-2xl bg-ink px-5 text-[15px] font-semibold text-canvas transition active:scale-[0.98]">
-            Open the demo on your phone <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </a>
-          <a href="#agents" className="flex h-12 items-center gap-2 rounded-2xl bg-card px-5 text-[15px] font-semibold shadow-card transition active:scale-[0.98]">
-            Connect your agent
-          </a>
-        </motion.div>
-      </header>
+      <div className="relative isolate overflow-x-clip pt-14">
+        <Backdrop />
+        <header className="mx-auto max-w-6xl px-5 pt-14 pb-12 text-center sm:pt-20">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease, delay: 0.05 }}
+            className="mx-auto max-w-4xl text-[clamp(2.6rem,7vw,5.2rem)] leading-[0.95] font-bold tracking-[-0.05em] text-balance"
+          >
+            Any UPI QR,
+            <span className="block bg-gradient-to-r from-[#0b9a5c] via-[#1a7f6e] to-[#4285F4] bg-clip-text pb-1 text-transparent">one tap away.</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease, delay: 0.12 }}
+            className="mx-auto mt-6 max-w-xl text-[17.5px] leading-relaxed text-mute text-pretty"
+          >
+            {NAME} turns a QR into a link that opens GPay, PhonePe or Paytm with the payee and amount already filled in. Made for AI agents, handy for everyone.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease, delay: 0.2 }}
+            className="mt-8 flex flex-wrap justify-center gap-3"
+          >
+            <a href="/demo" className="group flex h-12 items-center gap-2 rounded-2xl bg-ink px-5 text-[15px] font-semibold text-canvas transition active:scale-[0.98]">
+              Try the demo <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </a>
+            <a href="#agents" className="flex h-12 items-center gap-2 rounded-2xl bg-card px-5 text-[15px] font-semibold shadow-card transition active:scale-[0.98]">
+              Connect your agent
+            </a>
+          </motion.div>
+          <motion.ul
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, ease, delay: 0.3 }}
+            className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[13px] font-medium text-faint"
+          >
+            {["No app to install", "No sign-up", "Never touches your money"].map((t) => (
+              <li key={t} className="flex items-center gap-1.5">
+                <Check className="size-3.5 text-save" /> {t}
+              </li>
+            ))}
+          </motion.ul>
+        </header>
 
-      <section className="mx-auto max-w-6xl px-5 pb-16" aria-label="How it works">
-        <StoryDemo />
-      </section>
+        <section className="mx-auto max-w-6xl px-5 pb-16" aria-label="How it works">
+          <StoryDemo />
+        </section>
 
-      <BeforeAfter />
-      <Agents origin={origin} />
-      <Features />
+        <BeforeAfter />
+        <Agents origin={origin} />
+        <Features />
 
-      <section id="try" className="mx-auto max-w-6xl px-5 py-20">
-        <SectionHead index="04" eyebrow="No agent? No problem" title="Got a QR screenshot already?" sub="Drop it here and get a link that opens straight in your UPI app. It’s decoded in your browser and never uploaded." />
-        <div className="mt-10">
-          <QrTool />
-        </div>
-      </section>
+        <section id="try" className="mx-auto max-w-6xl px-5 py-20">
+          <SectionHead index="04" eyebrow="No agent? No problem" title="Got a QR screenshot already?" sub="Drop it here and get a link that opens straight in your UPI app. It’s decoded in your browser and never uploaded." />
+          <div className="mt-10">
+            <QrTool />
+          </div>
+        </section>
 
-      <Faq />
+        <Faq />
 
-      <footer className="border-t border-line">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 text-[13px] text-mute sm:flex-row">
-          <span className="flex items-center gap-2 font-semibold text-ink">
-            <Logo /> {NAME}
-          </span>
-          <span>Never touches your money. Payments happen inside your own UPI app.</span>
-          <span className="flex gap-4">
-            <a href="/llms.txt" className="hover:text-ink">llms.txt</a>
-            <a href="/openapi.json" className="hover:text-ink">OpenAPI</a>
-            <a href="/SKILL.md" className="hover:text-ink">SKILL.md</a>
-          </span>
-        </div>
-      </footer>
-    </div>
+        <footer className="border-t border-line">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 text-[13px] text-mute sm:flex-row">
+            <span className="flex items-center gap-2 font-semibold text-ink">
+              <Logo /> {NAME}
+            </span>
+            <span className="text-center">
+              Never touches your money. Payments happen inside your own UPI app.
+              <span className="mt-1 block">
+                Open source on{" "}
+                <a href={SITE.repo} target="_blank" rel="noopener" className="font-semibold text-ink hover:underline">
+                  GitHub
+                </a>
+                . Made by{" "}
+                <a href={SITE.author.url} target="_blank" rel="noopener" className="font-semibold text-ink hover:underline">
+                  viztf.lol
+                </a>
+                .
+              </span>
+            </span>
+            <span className="flex gap-4">
+              <a href="/llms.txt" className="hover:text-ink">llms.txt</a>
+              <a href="/openapi.json" className="hover:text-ink">OpenAPI</a>
+              <a href="/SKILL.md" className="hover:text-ink">SKILL.md</a>
+            </span>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
 
@@ -165,9 +184,18 @@ function Logo() {
   );
 }
 
+/** lucide dropped brand icons, so the GitHub mark is inlined. */
+function GitHubMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8 0 3.2.9.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3" />
+    </svg>
+  );
+}
+
 function Nav() {
   return (
-    <nav className="sticky top-0 z-30 border-b border-transparent bg-canvas/70 backdrop-blur-xl">
+    <nav className="fixed inset-x-0 top-0 z-30 border-b border-transparent bg-canvas/70 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5">
         <a href="/" className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
           <Logo /> {NAME}
@@ -176,6 +204,9 @@ function Nav() {
           <a href="#agents" className="hidden rounded-lg px-3 py-1.5 hover:text-ink sm:block">For agents</a>
           <a href="#try" className="hidden rounded-lg px-3 py-1.5 hover:text-ink sm:block">Try it</a>
           <a href="#faq" className="hidden rounded-lg px-3 py-1.5 hover:text-ink md:block">FAQ</a>
+          <a href={SITE.repo} target="_blank" rel="noopener" aria-label={`${NAME} on GitHub`} className="rounded-lg px-2.5 py-1.5 hover:text-ink">
+            <GitHubMark className="size-[18px]" />
+          </a>
           <a href="/demo" className="rounded-xl bg-ink px-3.5 py-1.5 text-canvas">Demo</a>
         </div>
       </div>

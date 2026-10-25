@@ -28,8 +28,8 @@ export default function OgImage() {
           <Mark size={56} /> {SITE.name}
         </div>
         <div style={{ marginTop: 40, fontSize: 62, fontWeight: 800, letterSpacing: -2.5, lineHeight: 1.02, display: "flex", flexDirection: "column" }}>
-          <span>Your agent shops.</span>
-          <span style={{ color: "#0b9a5c" }}>You pay with one tap.</span>
+          <span>Any UPI QR,</span>
+          <span style={{ color: "#0b9a5c" }}>one tap away.</span>
         </div>
         <div style={{ marginTop: 28, fontSize: 28, color: "#6b675e", lineHeight: 1.35 }}>
           UPI QR + cart → a pay page that opens GPay, PhonePe or Paytm pre-filled.
