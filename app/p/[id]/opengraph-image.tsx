@@ -9,7 +9,7 @@ export const alt = "UPI payment request";
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const s = await getSession((await params).id).catch(() => null);
   const upi = s && parseUpi(s.upi);
-  if (!s || !upi) return ogCard({ eyebrow: "UPI payment", title: "Payment link expired", sub: "Start a new payment" });
+  if (!s || !upi || s.status === "expired") return ogCard({ eyebrow: "UPI payment", title: "Payment link expired", sub: "Start a new payment" });
   const am = amountOf(upi);
   const count = s.order?.items.reduce((n, i) => n + i.qty, 0);
   return ogCard({

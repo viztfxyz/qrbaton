@@ -180,7 +180,7 @@ export function PayScreen({ upi, order, session, demo }: Props) {
             <NoticeCard tone="bad" title="Payment didn’t go through" body={`Start a new payment from ${merchant}. If money left your account, your bank reverses it automatically.`} />
           )}
           {status === "expired" && (
-            <NoticeCard tone="warn" title="This payment link has expired" body={`Don’t pay with an old link. Start a new payment from ${merchant}.`} />
+            <NoticeCard tone="warn" title="This payment link has expired" body={`Paying is closed, and the order is shown below for reference only. To pay, start a new payment from ${merchant}.`} />
           )}
           {order && (
             <>

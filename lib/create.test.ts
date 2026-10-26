@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 const { createFromInput, InputError } = await import("./create");
-const { getSession } = await import("./store");
+const { getSession, setStatus } = await import("./store");
 
 const ORIGIN = "https://pay.example";
 const qrB64 = async (text: string) => (await QRCode.toBuffer(text, { margin: 4, width: 400 })).toString("base64");
@@ -55,5 +55,33 @@ describe("createFromInput", () => {
     await expect(createFromInput({ qr: Buffer.from("not an image").toString("base64") }, ORIGIN)).rejects.toThrow(InputError);
     await expect(createFromInput({ payee: { pn: "No VPA" } }, ORIGIN)).rejects.toThrow(InputError);
     await expect(createFromInput({ payee: { pa: "bad" } }, ORIGIN)).rejects.toThrow(/valid UPI ID/);
+  });
+
+  it("takes an optional expiry in minutes or seconds, up to 24 hours", async () => {
+    const payee = { pa: "a@b", am: 1 };
+    const before = Date.now();
+    const within = (ms: number, want: number) => expect(ms - before).toSatisfy((d: number) => d >= want && d < want + 10_000);
+    within((await createFromInput({ payee, expiresInMinutes: 90 }, ORIGIN)).expiresAt, 90 * 60_000);
+    within((await createFromInput({ payee, ttlSec: 86400 }, ORIGIN)).expiresAt, 86400_000);
+    within((await createFromInput({ payee }, ORIGIN)).expiresAt, 30 * 60_000);
+    await expect(createFromInput({ payee, expiresInMinutes: 1441 }, ORIGIN)).rejects.toThrow(InputError);
+    await expect(createFromInput({ payee, ttlSec: 86401 }, ORIGIN)).rejects.toThrow(InputError);
+    await expect(createFromInput({ payee, ttlSec: 600, expiresInMinutes: 10 }, ORIGIN)).rejects.toThrow(InputError);
+  });
+
+  it("keeps an expired page readable for 24 hours but closed to payment", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      const c = await createFromInput({ payee: { pa: "a@b", am: 1 }, order: { merchant: "M", items: [{ name: "x", qty: 1, price: 1 }] }, expiresInMinutes: 5 }, ORIGIN);
+      vi.setSystemTime(Date.now() + 6 * 60_000);
+      const s = await getSession(c.id);
+      expect(s?.status).toBe("expired");
+      expect(s?.order?.items[0].name).toBe("x");
+      expect((await setStatus(c.id, { status: "paid", paidBy: "payer" }))?.changed).toBe(false);
+      vi.setSystemTime(c.expiresAt + 24 * 3600_000 + 1000);
+      expect(await getSession(c.id)).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

@@ -69,6 +69,9 @@ export const PayeeSchema = z.object({
   tr: z.string().trim().max(50).optional(),
 });
 
+/** Longest a pay link accepts payment for. */
+export const MAX_TTL_SEC = 24 * 3600;
+
 /** Image as base64 or a data: URI. ~4 MB of image after decoding (Vercel caps bodies at 4.5 MB). */
 export const MAX_QR_B64 = 5_600_000;
 
@@ -78,12 +81,26 @@ export const CreateSessionSchema = z
     qr: z.string().max(MAX_QR_B64).optional(),
     payee: PayeeSchema.optional(),
     order: OrderInputSchema.optional(),
-    ttlSec: z.number().int().min(60).max(24 * 3600).optional(),
+    ttlSec: z
+      .number()
+      .int()
+      .min(60)
+      .max(MAX_TTL_SEC)
+      .optional()
+      .describe("Optional. Seconds until payment closes: 60 to 86400 (24 hours). Defaults to 1800 (30 minutes). Or use expiresInMinutes."),
+    expiresInMinutes: z
+      .number()
+      .int()
+      .min(1)
+      .max(MAX_TTL_SEC / 60)
+      .optional()
+      .describe("Optional. Minutes until payment closes: 1 to 1440 (24 hours). Defaults to 30. Same as ttlSec, in minutes; send one or the other."),
     /** https URL that gets a signed POST whenever the status changes. */
     callbackUrl: httpsUrl.optional(),
   })
   .refine((b) => b.upi || b.qr || b.payee?.pa, { message: "send one of: upi, qr, or payee.pa" })
-  .refine((b) => !(b.upi && b.qr), { message: "send upi or qr, not both" });
+  .refine((b) => !(b.upi && b.qr), { message: "send upi or qr, not both" })
+  .refine((b) => b.ttlSec === undefined || b.expiresInMinutes === undefined, { message: "send ttlSec or expiresInMinutes, not both" });
 
 export type CreateSessionInput = z.input<typeof CreateSessionSchema>;
 

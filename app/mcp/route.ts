@@ -22,7 +22,7 @@ const TOOLS = () => [
     name: "create_pay_link",
     title: "Create UPI pay link",
     description:
-      "Create a review-and-pay page for a UPI payment and get its URL to send to the person who pays. Give the payee as qr (base64 image of a UPI QR), upi (upi://pay?... string), or payee {pa, pn, am}; payee fields override the QR. Add order (merchant, site, agent, note, items, charges, delivery) to show the cart. Returns url (send this), id, and manageToken (keep it; needed for set_payment_status).",
+      "Create a review-and-pay page for a UPI payment and get its URL to send to the person who pays. Give the payee as qr (base64 image of a UPI QR), upi (upi://pay?... string), or payee {pa, pn, am}; payee fields override the QR. Add order (merchant, site, agent, note, items, charges, delivery) to show the cart. Optionally set expiresInMinutes (1 to 1440, default 30) to choose when payment closes; the page then stays viewable, read-only, for 24 more hours. Returns url (send this), id, and manageToken (keep it; needed for set_payment_status).",
     inputSchema: createInputSchema(),
   },
   {
