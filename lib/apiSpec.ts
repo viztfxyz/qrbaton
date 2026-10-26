@@ -52,7 +52,7 @@ export function openApi(origin: string) {
         post: {
           operationId: "createPayLink",
           summary: "Create a pay link",
-          description: `Send exactly one of upi or qr, or payee.pa on its own; payee fields override what the QR says (e.g. add an amount to a static QR). Amount: payee.am, else order.total, else the sum of order.items (only when there are no charges; charges are the full bill as displayed, so send total with them). When both am and total are given they must match. Limit: ${CREATE_LIMIT} per hour per IP. Also accepts multipart/form-data with a qr file plus upi/payee/order/ttlSec fields (objects as JSON strings).`,
+          description: `Send exactly one of upi or qr, or payee.pa on its own; payee fields override what the QR says (e.g. add an amount to a static QR). Amount: payee.am, else order.total, else the sum of order.items (only when there are no charges; charges are the full bill as displayed, so send total with them). When both am and total are given they must match. Limit: ${CREATE_LIMIT} per hour per IP. Also accepts multipart/form-data with a qr file plus upi/payee/order/ttlSec/expiresInMinutes fields (objects as JSON strings).`,
           requestBody: {
             required: true,
             content: {
@@ -65,7 +65,8 @@ export function openApi(origin: string) {
                     upi: { type: "string" },
                     payee: { type: "string", description: "JSON" },
                     order: { type: "string", description: "JSON" },
-                    ttlSec: { type: "integer" },
+                    ttlSec: { type: "integer", minimum: 60, maximum: 86400 },
+                    expiresInMinutes: { type: "integer", minimum: 1, maximum: 1440 },
                   },
                 },
               },
@@ -146,7 +147,7 @@ POST ${origin}/api/sessions (JSON). Give the payee one of three ways:
 Optional "order": {"merchant","site","agent","note","total","items":[{"name","qty","price","mrp","unit","image"}],"charges":[{"label","amount"}],"delivery":{"slot","address":{"label","text"}},"orderId","logo"}.
 "charges" is the bill exactly as shown, top to bottom (e.g. Item total, Delivery, Handling fee); negative amounts are discounts.
 Amount comes from payee.am, else order.total, else the sum of items (only when there are no charges). If you send charges, send total too. If both am and total are given they must match.
-"ttlSec": 60 to 86400 (default 1800). "callbackUrl": optional https webhook.
+When payment closes (optional, default 30 minutes): "expiresInMinutes" 1 to 1440, or "ttlSec" 60 to 86400. After that the page stays readable for 24 hours (cart, charges, total) with paying disabled, then it is gone. "callbackUrl": optional https webhook.
 
 \`\`\`bash
 curl -X POST ${origin}/api/sessions -H 'content-type: application/json' -d '{

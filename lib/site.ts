@@ -50,6 +50,6 @@ export const FAQ = [
   },
   {
     q: "Is my order visible to anyone?",
-    a: "Pay pages are unlisted, not indexed and not cached, and they expire (30 minutes by default). Anyone with the link can see the order, so share it only with the person paying.",
+    a: "Pay pages are unlisted, not indexed and not cached, and they expire (30 minutes by default, up to 24 hours; the order stays viewable, without the pay button, for a day after). Anyone with the link can see the order, so share it only with the person paying.",
   },
 ];

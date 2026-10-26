@@ -35,7 +35,7 @@ const fmtAm = (n: number) => (paise(n) / 100).toFixed(2);
 export async function createFromInput(input: CreateSessionInput, origin: string): Promise<Created> {
   const parsed = CreateSessionSchema.safeParse(input);
   if (!parsed.success) throw new InputError("invalid body", parsed.error.issues);
-  const { upi: raw, qr, payee, order: orderIn, ttlSec, callbackUrl } = parsed.data;
+  const { upi: raw, qr, payee, order: orderIn, ttlSec, expiresInMinutes, callbackUrl } = parsed.data;
 
   if (callbackUrl && !callbackAllowed(callbackUrl)) throw new InputError("callbackUrl must be a public https host");
 
@@ -77,7 +77,7 @@ export async function createFromInput(input: CreateSessionInput, origin: string)
 
   const upi = parseUpi(p);
   if (!upi) throw new InputError("payee.pa must be a valid UPI ID like name@bank");
-  const { session, manageToken } = await createSession(upi.qs, order, ttlSec, callbackUrl);
+  const { session, manageToken } = await createSession(upi.qs, order, ttlSec ?? (expiresInMinutes && expiresInMinutes * 60), callbackUrl);
   return {
     id: session.id,
     url: `${origin}/p/${session.id}`,

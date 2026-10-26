@@ -23,6 +23,8 @@ export interface Session {
 export type Outcome = { status: Exclude<Status, "pending">; paidBy?: Session["paidBy"]; utr?: string };
 
 export const DEFAULT_TTL_SEC = 30 * 60;
+/** How long a page stays readable after payment closes, so the payer can still see what the order was. */
+export const RETAIN_SEC = 24 * 3600;
 const key = (id: string) => `qrbaton:session:${id}`;
 const ALPHABET = "23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 
@@ -82,7 +84,7 @@ function memoryBackend(): Backend {
     const v = c.get(k);
     return v && v.until > Date.now() ? v : null;
   };
-  const live = (s: Session | undefined) => (s && s.expiresAt > Date.now() ? s : null);
+  const live = (s: Session | undefined) => (s && s.expiresAt + RETAIN_SEC * 1000 > Date.now() ? s : null);
   return {
     get: async (id) => live(m.get(id)),
     put: async (s) => void m.set(s.id, s),
@@ -133,7 +135,7 @@ export async function createSession(
     manageHash: hashToken(manageToken),
     ...(callbackUrl ? { callbackUrl } : {}),
   };
-  await backend().put(s, ttlSec);
+  await backend().put(s, ttlSec + RETAIN_SEC);
   return { session: s, manageToken };
 }
 

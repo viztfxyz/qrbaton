@@ -18,11 +18,17 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { s, upi } = r;
   const am = amountOf(upi);
   const who = s.order?.merchant ?? (upi.pn || upi.pa);
-  const title = am !== null ? `Pay ${formatMoney(am, upi.cu)} · ${who}` : `Pay ${who}`;
+  const expired = s.status === "expired";
+  const pay = am !== null ? `Pay ${formatMoney(am, upi.cu)} · ${who}` : `Pay ${who}`;
+  const title = expired ? `Expired: ${am !== null ? `${formatMoney(am, upi.cu)} · ` : ""}${who}` : pay;
   const count = s.order?.items.reduce((n, i) => n + i.qty, 0);
   return {
     title,
-    description: count ? `${count} ${count === 1 ? "item" : "items"} · tap to pay with any UPI app` : "Tap to pay with any UPI app",
+    description: expired
+      ? "This payment link has expired"
+      : count
+        ? `${count} ${count === 1 ? "item" : "items"} · tap to pay with any UPI app`
+        : "Tap to pay with any UPI app",
     robots: { index: false, follow: false },
     twitter: { card: "summary_large_image" },
   };

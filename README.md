@@ -79,7 +79,7 @@ curl -X PATCH $BASE/api/sessions/{id} -H "authorization: Bearer $MANAGE_TOKEN" -
 - **Amount:** from `payee.am`, else `order.total`, else the sum of `order.items` (only when there are no `charges`, since charges are the full bill as displayed). If both the amount and the total are given they must match.
 - **Webhooks:** add `"callbackUrl": "https://…"`. Every status change POSTs `{"event":"session.status",…}` signed as `x-qrbaton-signature: sha256=HMAC-SHA256(key = hex sha256(manageToken), raw body)`.
 - **Payer claims:** `paidBy: "payer"` means the payer tapped *I’ve paid*. The creator can confirm it, or overrule it with `failed`. Otherwise terminal statuses are final.
-- **Limits:** `CREATE_LIMIT_PER_HOUR` per IP (default 60). Links last 30 minutes by default (`ttlSec`, up to 24 h).
+- **Limits:** `CREATE_LIMIT_PER_HOUR` per IP (default 60). Payment stays open 30 minutes by default (set `expiresInMinutes`, up to 24 h). After that the page stays readable for another 24 h, with paying disabled.
 - **Privacy:** pay pages are `noindex`, `no-store` and `Referrer-Policy: no-referrer`. Order details are labelled on the page as unverified, provided by the sender.
 
 ## Routes

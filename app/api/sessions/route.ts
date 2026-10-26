@@ -6,7 +6,7 @@ import type { CreateSessionInput } from "@/lib/order";
 
 export const OPTIONS = preflight;
 
-/** JSON body, or multipart with a `qr` file and `upi` / `payee` / `order` / `ttlSec` fields (objects as JSON strings). */
+/** JSON body, or multipart with a `qr` file and `upi` / `payee` / `order` / `ttlSec` / `expiresInMinutes` fields (objects as JSON strings). */
 async function readBody(req: Request): Promise<CreateSessionInput> {
   if (!(req.headers.get("content-type") ?? "").includes("multipart/form-data")) {
     const body = await req.json().catch(() => null);
@@ -27,13 +27,17 @@ async function readBody(req: Request): Promise<CreateSessionInput> {
   };
   const file = form.get("qr");
   const upi = form.get("upi");
-  const ttl = form.get("ttlSec");
+  const num = (k: string) => {
+    const v = form.get(k);
+    return typeof v === "string" && v ? Number(v) : undefined;
+  };
   return {
     upi: typeof upi === "string" && upi ? upi : undefined,
     qr: file instanceof Blob ? Buffer.from(await file.arrayBuffer()).toString("base64") : typeof file === "string" && file ? file : undefined,
     payee: obj("payee"),
     order: obj("order"),
-    ttlSec: typeof ttl === "string" && ttl ? Number(ttl) : undefined,
+    ttlSec: num("ttlSec"),
+    expiresInMinutes: num("expiresInMinutes"),
   };
 }
 
