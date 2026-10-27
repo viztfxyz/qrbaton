@@ -20,7 +20,8 @@ export function QrCode({ value, className }: { value: string; className?: string
     <div
       role="img"
       aria-label="QR code"
-      className={cn("aspect-square [&>svg]:size-full", !svg && "animate-pulse rounded-xl bg-soft", className)}
+      // Always on a white tile with a quiet zone so it stays scannable on dark backgrounds.
+      className={cn("aspect-square rounded-xl [&>svg]:size-full", svg ? "bg-white p-2.5" : "animate-pulse bg-soft", className)}
       // biome-ignore lint: SVG generated locally by the qrcode package
       dangerouslySetInnerHTML={svg ? { __html: svg } : undefined}
     />
