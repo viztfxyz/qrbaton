@@ -1,6 +1,6 @@
 /** UPI intent parsing and per-app deep links. Every param passes through unchanged. */
 
-export type AppKey = "g" | "p" | "t" | "u";
+export type AppKey = "g" | "p" | "t" | "c" | "u";
 
 export interface UpiApp {
   k: AppKey;
@@ -13,6 +13,7 @@ export const APPS: UpiApp[] = [
   { k: "p", name: "PhonePe", icon: "Pe", scheme: "phonepe://pay?" },
   { k: "g", name: "GPay", icon: "G", scheme: "gpay://upi/pay?" },
   { k: "t", name: "Paytm", icon: "Pt", scheme: "paytmmp://pay?" },
+  { k: "c", name: "CRED", icon: "C", scheme: "credpay://upi/pay?" },
   { k: "u", name: "Other UPI app", icon: "₹", scheme: "upi://pay?" },
 ];
 

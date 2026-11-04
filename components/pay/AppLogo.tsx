@@ -2,16 +2,17 @@ import { siGooglepay, siPaytm, siPhonepe } from "simple-icons";
 import { cn } from "@/lib/cn";
 import type { AppKey } from "@/lib/upi";
 
-const BRAND: Record<AppKey, { hex: string; path?: string }> = {
+const BRAND: Record<AppKey, { hex: string; path?: string; text?: string }> = {
   g: { hex: `#${siGooglepay.hex}`, path: siGooglepay.path },
   p: { hex: `#${siPhonepe.hex}`, path: siPhonepe.path },
   t: { hex: "#00BAF2", path: siPaytm.path },
+  c: { hex: "#000000", text: "CRED" },
   u: { hex: "#16150f" },
 };
 
 export const brandColor = (k: AppKey) => BRAND[k].hex;
 
-/** Rounded brand tile for a UPI app. "Other" gets a rupee mark. */
+/** Rounded brand tile for a UPI app. CRED (no simple-icons glyph) gets a wordmark; "Other" gets a rupee mark. */
 export function AppLogo({ k, className }: { k: AppKey; className?: string }) {
   const b = BRAND[k];
   return (
@@ -23,6 +24,10 @@ export function AppLogo({ k, className }: { k: AppKey; className?: string }) {
         <svg viewBox="0 0 24 24" className="size-[62%]" fill={b.hex}>
           <path d={b.path} />
         </svg>
+      ) : b.text ? (
+        <span className="text-[10px] font-extrabold tracking-[0.08em]" style={{ color: b.hex }}>
+          {b.text}
+        </span>
       ) : (
         <span className="text-lg font-semibold text-[#16150f]">₹</span>
       )}
